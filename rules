@@ -1,0 +1,270 @@
+BEFORE YOU READ
+---------------
+Please note that this file of rules is only a DRAFT. I am aware that
+some algorithms can be wrong and/or stupid and/or mismatched. I am
+also sure that some of this rules will be changed during coding and
+testing.
+
+THE BEGINNING
+-------------
+1. Values at start:
+   * money: 20 000,
+   * people: 20 workers, 5 scientists, 0 soldiers,
+   * buldings: 1000t warehouses, 100 flats, 0s others,
+   * resources: random values as follows:
+     - silicon 0-400,
+     - ferrum  0-200,
+     - uranium 0-100,
+
+     Note:
+     ^^^^^
+     The most controversial rule: there will no typical random
+     function, but random values as follows:
+     	 * 50% probability (1 of 2) that it will be 0,
+	 * 33% probability (1 of 3) that it be a random value from 0
+	   up to 10% of the previosuly mentioned value (so 0-40 in
+	   case of the silicon),
+	 * 17% probability (1 of 6) that it be a random value from 0
+	   up to 100% of the previously mentioned value (so 0-400 in
+	   case of the silicon).
+
+     Yeah, I know that this rule looks very stupid, but I still think
+     it will increase the level of fun.
+
+   * only one generator,
+   * 0s for security machines (all robots)
+
+PRICES
+------
+1. Resources (MIN-MAX):
+   * silicon: 40-120,
+   * ferrum:  90-270,
+   * uranium: 220-500,
+   * food:    10-60,
+
+2. Machines and people:
+   * Robots Bb-1:   800-1500,
+   * Robots Bb-2:  1300-2500,
+   * X-Wings:	    800-1600,
+   * Super XWs:	   1500-3500,
+   * generators:   4500-6000,
+
+   workers, scientists and soldiers: ticket costs 50 for person.
+
+   No special algorithm to calculate the price in the next turn. Just
+   simple, standard random value from MIN to MAX.
+
+ALGORITHMS
+----------
+1. Cultivations
+a) one worker (destined to cultivations) produces 10t per one
+   harvest. Harvests -- one per year,
+
+2. Expeditions
+a) algorithm counting the probability of discovering something during
+   expeditions:
+  
+   P = W + (S * 5) [%] 
+   where:
+	 P is the probability of discovering _any_ resource (in %),
+	 W is the number of workers sent,
+	 S is the number of scientists sent
+   and cannot be more than 33% which means that if 10 workers and 7
+   scientists have been sent, the probability is still 33% (even if
+   10 + (7 * 5) is 45).
+
+   Attention: the length of expedition does _NOT_ have any influence
+   on P. Probably this should be changed in the future.
+
+b) algorithm counting the probability of discovering particular
+   resource (used in a case that expedition found _something_).
+
+   Every single resource (except uranium) has a 50% probability, but
+   the order is following:
+     - silicon,
+     - ferrum
+
+   So it means that first is silicon: if it is not drawn (probability
+   is 1/2), the next is ferrum and if ferrum is not drawn, _for sure_
+   (probability is 1) uranium will be discovered.
+
+   The size of discovered ore is a random value from 1 to 333.
+
+   Attention: the construction of this algorithm causes there will be
+   no situation that more than one ore will be discovered during one
+   single expedition. Probably this also should be changed in the
+   future.
+
+3. Trade
+a) algorithm of spaceships -- to connect number of the ship (for
+   example WARG 28) with its content.
+
+   V = N * 100 [Units]
+   where:
+	V is the minimum/maximum value of goods (resources and people)
+          for the ship
+	N is the rank of the ship (number after word WARG)
+
+   for example: when it is a spaceship WARG 28, its V is V = 28*100 =
+   2800. So it can contain goods from -2800 up to +2800.
+
+4. Buildings
+a) algorithms for landings -- how number of landings affects on
+   spaceships. [this algorithm isn't probably proper and should be
+   fixed... ]
+      
+   +----------+------------------+
+   |number of |max_spaceship_wage|
+   | landings |     (WARG X)     |
+   +----------+------------------+
+   |    0     |        20        |
+   +----------+------------------+
+   |    1     |        30        |
+   +----------+------------------+
+   |   2-5    |        50        |
+   +----------+------------------+
+   |   6-20   |       100        |
+   +----------+------------------+
+   |  21-50   |       200        |
+   +----------+------------------+
+   |  51-100  |       500        |
+   +----------+------------------+
+   | 101-200  |      1000        |
+   +----------+------------------+
+   | > 201    |      2000        |
+   +----------+------------------+
+
+5. Time factor
+   Civil robots (Bb-1 and Bb-2) as well as scientists and workers,
+   have a special factor, called Time factor (TF). This value is used
+   to predict time of construction new buildings, machines, etc.
+
+   +----------+-----+
+   |  	      | TF  |  
+   +----------+-----+
+   |worker    |  1  |
+   +----------+-----+
+   |scientist |  5  |
+   +----------+-----+
+   |Bb-1      | 10  |
+   +----------+-----+
+   |Bb-2      | 15  |
+   +----------+-----+
+   
+6. Production and mining
+a) costs of production
+
+   before you read, please note:
+      -- "time" and "power" values are for 1 turn,
+      -- for "time" value, please see "Time factor" mentioned above.
+
+   * buldings:
+   +----------+----------+----------+----------+----------+
+   |          |flats (for|          |          |          |
+   |          |50 people)|warehouse | landing  | factory  |
+   +----------+----------+----------+----------+----------+
+   |silicon   |    50    |   150    |   300    |   100    |
+   +----------+----------+----------+----------+----------+
+   |ferrum    |    25    |   100    |    80    |   200    |
+   +----------+----------+----------+----------+----------+
+   |uranium   |     0    |     0    |     5    |    50    |
+   +----------+----------+----------+----------+----------+
+   |power(kWh)|    15    |    20    |    40    |    30    |
+   +----------+----------+----------+----------+----------+
+   |time      |    80    |   100    |   200    |   150    |
+   +----------+----------+----------+----------+----------+
+
+   * machines:
+   +----------+----------+----------+----------+----------+----------+   
+   |          |Bb-1 (for |Bb-2 (for |X-Wings   |Super     |generators|
+   |          |10 pieces)|5 pcs)    |(for 5    |X-Wings   |(for 4    |
+   |          |          |          |pcs)      |(for 5    |pcs)      |
+   |          |          |          |          |pcs)      |          |
+   +----------+----------+----------+----------+----------+----------+
+   |silicon   |   20     |    15    |    12    |    10    |    40    |
+   +----------+----------+----------+----------+----------+----------+
+   |ferrum    |   20     |    10    |    10    |    30    |    30    |
+   +----------+----------+----------+----------+----------+----------+
+   |uranium   |    2     |     2    |     4    |     6    |     1    |
+   +----------+----------+----------+----------+----------+----------+
+   |power(kWh)|   25     |    20    |    15    |    25    |    30    |
+   +----------+----------+----------+----------+----------+----------+
+   |time      |  100     |   150    |   200    |   400    |   300    |
+   +----------+----------+----------+----------+----------+----------+
+
+   * every started 5 kWh consumes 1 ton of uranium per turn
+
+b) mining
+   costs of production (every started 100 tons per 1 turn):
+   +-------+-----+----------+
+   |       |time |uranium   |
+   |       |fact.|consumpt. |
+   +-------+-----+----------+
+   |silicon|  3  |    2     |
+   +-------+-----+----------+
+   |ferrum |  5  |    1     |
+   +-------+-----+----------+
+   |uranium| 10  |    3     |
+   +-------+-----+----------+
+
+7. Military strength and robberies 
+a) military strength of the Colony:
+
+   MS = SLDS + (BB-1 * 2) + (BB-2 * 3) + (XWS * 5) + (SXWS * 10)
+   where:
+	MS   - military strength
+	SLDS - number of soldiers,
+	BB-1 - number of Bb-1 robots,
+	BB-2 - number of Bb-2 robots,
+	XWS  - number of X-Wings robots,
+	SXWS - number of Super X-Wings robots
+
+b) Attacks of robbers
+   * probability of attack: 1 of 10 per each turn,
+   * strength of robbers: 
+     SR = random value from 1 to 5000,
+   * if MS (look above for this factor) is greater then SR, the attack
+     is resisted (no losses). Otherwise:
+     -- random resources/machines/losses are destroyed with
+     	probability 1 of 3,
+     -- the values of losses are random values from 0 to LF [%] where
+     	LF = (SR - MS) / 50 [%]
+
+	Example: 
+		SR = 3250, MS = 2000, 
+		LF = (SR - MS) / 50 = 1250 / 50 = 25 [%]
+		
+	So every chosen resource will be destroyed by 0-25 percent 
+	(random value).
+
+8. Life in Kolony
+a) every started 10 people eats 1 ton of food per turn,
+b) wages per turn:
+   +----------+------+
+   |          | wage |
+   +----------+------+
+   |worker    |  10  |
+   +----------+------+
+   |scientist |  20  |
+   +----------+------+
+   |soldier   |  25  |
+   +----------+------+
+
+9. Additional algorithms
+a) number of free workers
+   FW = W - C - P
+
+   where:
+	FW number of workers,
+	W  total number of workers,
+	C  workers engaged in cultivations,
+	P  workers engaged in any kind of productions,
+
+b) number of free scientists
+   FS = S - P
+   
+   where:
+	FS number of scientists,
+	S  total number of scientists,
+	P  scientists engaged in any kind of productions, 
+
